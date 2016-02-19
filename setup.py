@@ -3,7 +3,11 @@
 from setuptools import setup, find_packages
 from jj_menu import __author__, __version__, __license__
 
-install_requires=['curses', 'six']
+# In [2]: from setuptools.command.bdist_egg import _get_purelib
+#
+# In [3]: _get_purelib()
+# Out[3]: '/Users/yotsuyanagi/.virtualenvs/default/lib/python2.7/site-packages'
+# $ cd $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
 
 setup(
     name='jj-menu',
@@ -15,5 +19,10 @@ setup(
     url='https://github.com/jytyng/jj-menu.git',
     keywords='CLI Menu, Python',
     packages=find_packages(),
-    install_requires=[],
+    install_requires=['six'],
+    entry_points={
+        'console_scripts': [
+            'jj-menu = jj_menu.jj_menu:main',
+        ]
+    },
 )

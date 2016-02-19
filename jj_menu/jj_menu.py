@@ -2,19 +2,19 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import unicode_literals, print_function
+
+import argparse
 import os
 import sys
 import locale
 import curses
 import _curses
+import subprocess
 import six
 
-# 文字化け対応
 locale.setlocale(locale.LC_ALL, '')
 
 COLOR_ACTIVE = 1
-
-result_filename = '/tmp/_jj_result'
 
 
 class MenuFileNotFound(Exception):
@@ -54,9 +54,6 @@ def import_menu_settings():
 
 def get_menu():
     def _get_menus():
-        """
-        メニュー項目1つなら同じものに展開
-        """
         menus = getattr(import_menu_settings(), 'menu')
         for m in menus:
             if isinstance(m, str):
@@ -89,9 +86,10 @@ def window_addstr(window, y, x, message, color=None):
 
 
 class Launcher(object):
-    def __init__(self, stdscr):
-        stdscr.refresh()  # なにより先にまず1回リフレッシュ
+    def __init__(self, stdscr, result_file=None):
+        stdscr.refresh()
         self.stdscr = stdscr
+        self.result_file = result_file
         self.max_y, self.max_x = stdscr.getmaxyx()
         self.pos_y = 0
         self.menu = get_menu()
@@ -121,7 +119,7 @@ class Launcher(object):
 
     def debug(self, message):
         """
-        簡易デバッグ
+        Easy debug
         """
         win = curses.newwin(1, 10, self.max_y - 2, self.max_x - 10)
         window_addstr(win, 0, 0, message[:10])
@@ -132,7 +130,7 @@ class Launcher(object):
 
             self.render()
 
-            # キー入力待機
+            # Waiting key input
             c = self.stdscr.getch()
 
             if c in (14, 106, 258):  # ↓
@@ -151,32 +149,43 @@ class Launcher(object):
             elif c in (113, 27):  # Q, Esc
                 raise KeyboardInterrupt()
             elif c == 10:
-                # 決定
-                with open(result_filename, 'w') as fp:
-                    fp.write(self.menu[self.pos_y][1])
-                return self.menu[self.pos_y]
+                # choose
+                script = self.menu[self.pos_y][1]
+                if self.result_file:
+                    with open(self.result_file, 'w') as fp:
+                        fp.write(script)
+                return script
             else:
                 self.debug('{}'.format(c))
 
     def init_outfile(self):
-        with open(result_filename, 'w') as fp:
+        if not self.result_file:
+            return
+        with open(self.result_file, 'w') as fp:
             fp.write('')
 
 
-def launch(stdscr):
+def launch(stdscr, args):
     initialize_colors()
     _curses.curs_set(0)
-    # 画面サイズ取得
-    launcher = Launcher(stdscr)
+    launcher = Launcher(stdscr, result_file=args.result_file)
 
-    selected = launcher.serve()
-    return selected
+    return launcher.serve()
 
 
 def main():
+    parser = argparse.ArgumentParser(description='jj-menu core')
+    parser.add_argument('--result-file', dest='result_file',
+                        help='result script file path', default=None)
+
+    args = parser.parse_args()
+
     try:
-        selected = curses.wrapper(launch)
-        print('$ {}'.format(selected[1]))
+        script = curses.wrapper(launch, args)
+        print('$ {}'.format(script))
+        if not args.result_file:
+            print(subprocess.check_output(script, shell=True))
+
     except KeyboardInterrupt:
         exit(1)
 

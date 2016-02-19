@@ -9,7 +9,7 @@ Install
 -------
 ::
 
-  $ sudo pip install git+https://github.com/junion-org/pip_github_test.git
+  $ pip install git+https://github.com/ytyng/jj-menu.git
 
 
 Setup
