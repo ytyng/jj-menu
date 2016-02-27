@@ -77,7 +77,9 @@ jj シェル関数を登録していない場合は、
 Key binds
 ---------
 
-ESC: Exit
-Q: Exit
-k: Up
-j: Down
+::
+
+    ESC: Exit
+    Q: Exit
+    k: Up
+    j: Down

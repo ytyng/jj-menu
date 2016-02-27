@@ -37,7 +37,7 @@ Create **jjfile.py** into any directory.
          'date +"%Y-%m-%d %H:%M:%S"|pbcopy')
     ]
 
-And register shell function
+And register shell function (Optional)
 
 ::
 
@@ -56,11 +56,20 @@ Run
 
   $ jj
 
+or
+
+::
+
+  $ jj-menu
+
+(In not registered jj shell function. Run selected command in subprocess.)
 
 Key binds
 ---------
 
-ESC: Exit
-Q: Exit
-k: Up
-j: Down
+::
+
+    ESC: Exit
+    Q: Exit
+    k: Up
+    j: Down
