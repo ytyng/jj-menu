@@ -91,7 +91,7 @@ def get_menu():
     def _get_menus():
         menus = getattr(import_menu_settings(), 'menu')
         for m in menus:
-            if isinstance(m, str):
+            if isinstance(m, six.string_types):
                 yield (m, m)
             elif len(m) >= 2:
                 if isinstance(m[1], (list, tuple)):
