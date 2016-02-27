@@ -79,7 +79,6 @@ def import_menu_settings():
     menu_file_path = find_menu_file_path(os.getcwd())
 
     importer = __import__
-    # Get directory and fabfile name
     dir_name, file_name = os.path.split(menu_file_path)
     if dir_name not in sys.path:
         sys.path.insert(0, dir_name)
