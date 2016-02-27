@@ -2,20 +2,21 @@
 jj-menu
 ~~~~~~~
 
-Simple CLI Menu
+シンプル CLIメニュー
 
-
-Install
--------
+インストール
+---------------------------------------
 ::
 
   $ pip install git+https://github.com/ytyng/jj-menu.git
 
 
-Setup
------
+設定
+---------------------------------------
 
-Create **jjfile.py** into any directory.
+**jjfile.py** を作る
+
+もしくは jjfile/__init__.py
 
 ::
 
@@ -37,7 +38,11 @@ Create **jjfile.py** into any directory.
          'date +"%Y-%m-%d %H:%M:%S"|pbcopy')
     ]
 
-And register shell function
+menu 変数がメニューとなります。
+実行するディレクトリと、親ディレクトリを再帰的に探します。
+
+
+シェル関数の登録 (Bash) (オプション)
 
 ::
 
@@ -49,12 +54,24 @@ And register shell function
         fi
     }
 
-Run
----
+
+実行
+---------------------------------------
 
 ::
 
   $ jj
+
+上記 jj シェル関数を登録してある場合、jj で現在のシェルプロセス上で選択したコマンドを実行します。
+
+jj シェル関数を登録していない場合は、
+
+::
+
+  $ jj-menu
+
+で、メニュー選択したコマンドを子プロセスで実行します。
+この、子プロセスで実行する場合は、cd したり シェル変数を書き換えたりのコマンドは意味がなくなります。
 
 
 Key binds
