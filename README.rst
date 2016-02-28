@@ -4,7 +4,7 @@ jj-menu
 
 Simple CUI (TUI) Menu
 
-.. image:: demo/jj-demo.jpg
+.. image:: demo/jj-demo.gif
 
 Install
 -------
