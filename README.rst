@@ -2,8 +2,9 @@
 jj-menu
 ~~~~~~~
 
-Simple CLI Menu
+Simple CUI (TUI) Menu
 
+.. image:: demo/jj-demo.jpg
 
 Install
 -------
