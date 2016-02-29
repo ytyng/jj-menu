@@ -16,7 +16,7 @@ setup(
     license=__license__,
     author=__author__,
     author_email='ytyng@live.jp',
-    url='https://github.com/jytyng/jj-menu.git',
+    url='https://github.com/ytyng/jj-menu.git',
     keywords='CUI, TUI, Launcher, Python, curses',
     packages=find_packages(),
     install_requires=['six'],
