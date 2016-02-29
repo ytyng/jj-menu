@@ -4,11 +4,11 @@
 from __future__ import unicode_literals
 
 menu = [
-    ('list python processes', 'ps -eafw|grep python'),
-    ('move tmp', 'cd /tmp/'),
-    ('list dirs', ['ls .', 'ls ..', 'ls ../..']),
+    ('PyPI register', 'python setup.py register',),
+    ('PyPI upload', 'python setup.py sdist upload',),
     ('Git logs (simple)',
-     'git log --graph --date-order -C -M --pretty=format:"<%h> %ad [%an] %Cgreen%d%Creset %s" '
+     'git log --graph --date-order -C -M '
+     '--pretty=format:"<%h> %ad [%an] %Cgreen%d%Creset %s" '
      '--all --date=short'),
     ('Git logs (verbose)',
      'git log --graph --date=iso --decorate --name-status'),
