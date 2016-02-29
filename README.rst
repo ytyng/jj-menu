@@ -10,9 +10,7 @@ Install
 -------
 ::
 
-  $ pip install jj-menu
-
-.. or $ pip install git+https://github.com/ytyng/jj-menu.git
+  $ pip install git+https://github.com/ytyng/jj-menu.git
 
 
 Setup
