@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from setuptools import setup, find_packages
+from setuptools import setup
 from jj_menu import __author__, __version__, __license__
 
 setup(
@@ -12,7 +12,7 @@ setup(
     author_email='ytyng@live.jp',
     url='https://github.com/ytyng/jj-menu.git',
     keywords='CUI, TUI, Launcher, Python, curses',
-    packages=find_packages(),
+    packages=['jj_menu'],
     install_requires=['six'],
     entry_points={
         'console_scripts': [
