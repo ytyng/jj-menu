@@ -11,8 +11,8 @@ colors = {
 }
 
 menu = [
-    ('PyPI register', 'python setup.py register', {"color": 1}),
-    ('PyPI upload', 'python setup.py sdist upload', {"color": 2}),
+    ('PyPI register', 'python setup.py register', {"color": 2}),
+    ('PyPI upload', 'python setup.py sdist upload', {"color": 3}),
     ('Git logs (simple)',
      'git log --graph --date-order -C -M '
      '--pretty=format:"<%h> %ad [%an] %Cgreen%d%Creset %s" '

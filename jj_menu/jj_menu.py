@@ -13,8 +13,7 @@ import six
 
 locale.setlocale(locale.LC_ALL, '')
 
-ACTIVE_COLOR_ID = 1
-ACTIVE_COLOR_OFFSET = 256
+ACTIVE_COLOR_PAIR_ID = ACTIVE_COLOR_OFFSET = 256
 
 HELP = """jjfile.py not found. Create it into current or parent directory.
 sample:
@@ -29,8 +28,8 @@ menu = [
     ('move tmp', 'cd /tmp/'),
     ('list dirs', ['ls .', 'ls ..', 'ls ../..']),
     ('Git logs (simple)',
-     'git log --graph --date-order -C -M --pretty=format:"<%h> %ad [%an] %Cgreen%d%Creset %s" '
-     '--all --date=short'),
+     'git log --graph --date-order -C -M --pretty=format:"<%h> %ad [%an] '
+     '%Cgreen%d%Creset %s" --all --date=short'),
     ('Git logs (verbose)',
      'git log --graph --date=iso --decorate --name-status'),
     ('Copy datetime to pasteboard',
@@ -63,22 +62,24 @@ class ColorIdTooLarge(Exception):
 def initialize_colors():
     # curses.start_color()
     curses.use_default_colors()
-    curses.init_pair(ACTIVE_COLOR_ID, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(ACTIVE_COLOR_PAIR_ID,
+                     curses.COLOR_BLACK, curses.COLOR_WHITE)
 
 
-def setup_palette(color_dict):
+def setup_color_palette(color_dict):
     if not color_dict:
         return
-    # for color_id, color_setting in color_dict.items():
-    #     if color_id >= 255:
-    #         raise ColorIdTooLarge(color_id)
-    #     if isinstance(color_setting, (list, tuple)):
-    #         fg_color, bg_color = color_setting
-    #     else:
-    #         fg_color = color_setting
-    #         bg_color = curses.COLOR_BLACK
-    #     curses.init_pair(color_id, fg_color, bg_color)
-    #     curses.init_pair(color_id + ACTIVE_COLOR_OFFSET, bg_color, fg_color)
+    for color_pair_id, color_setting in color_dict.items():
+        if color_pair_id >= 255:
+            raise ColorIdTooLarge(color_pair_id)
+        if isinstance(color_setting, (list, tuple)):
+            fg_color, bg_color = color_setting
+        else:
+            fg_color = color_setting
+            bg_color = curses.COLOR_BLACK
+        curses.init_pair(color_pair_id, fg_color, bg_color)
+        curses.init_pair(color_pair_id + ACTIVE_COLOR_OFFSET, bg_color,
+                         fg_color)
 
 
 def find_menu_file_path(cwd):
@@ -131,18 +132,18 @@ class MenuItem(object):
         return list(_get_menu_items())
 
     @property
-    def default_color_id(self):
+    def default_color_pair_id(self):
         return self.options.get('color', None)
 
     @property
-    def active_color_id(self):
-        dci = self.default_color_id
+    def active_color_pair_id(self):
+        dci = self.default_color_pair_id
         if not dci:
             return None
         return dci + ACTIVE_COLOR_OFFSET
 
 
-def window_addstr(window, y, x, message, color=None):
+def window_addstr(window, y, x, message, color_pair_id=None):
     """
     python 2, 3 multi-bytes compatible
     """
@@ -151,8 +152,8 @@ def window_addstr(window, y, x, message, color=None):
     else:
         new_message = message
     args = [y, x, new_message]
-    if color is not None:
-        args.append(color)
+    if color_pair_id is not None:
+        args.append(curses.color_pair(color_pair_id))
     try:
         window.addstr(*args)
     except _curses.error:
@@ -172,6 +173,9 @@ class Launcher(object):
             getattr(self.jjfile_module, 'menu'))
         self.init_outfile()
 
+        setup_color_palette(getattr(
+            self.jjfile_module, 'colors', None))
+
     def render(self):
         win = curses.newwin(
             len(self.menu_items), self.max_x, 0, 0)
@@ -180,10 +184,12 @@ class Launcher(object):
             if y == self.pos_y:
                 window_addstr(
                     win, y, 0, '*> {}'.format(item_name_str),
-                    curses.color_pair(ACTIVE_COLOR_ID))
+                    item.active_color_pair_id or ACTIVE_COLOR_PAIR_ID)
             else:
                 window_addstr(
-                    win, y, 0, '   {}'.format(item_name_str))
+                    win, y, 0, '   {}'.format(item_name_str),
+                    item.default_color_pair_id
+                )
         win.refresh()
         # win.refresh(0, 0, 0, 0, len(MENU), self.max_x)
 
@@ -191,7 +197,7 @@ class Launcher(object):
         message = '$ {}'.format(self.menu_items[self.pos_y].command)
         window_addstr(
             help_win, 0, 0, message[:self.max_x - 1],
-            curses.color_pair(ACTIVE_COLOR_ID))
+            curses.color_pair(ACTIVE_COLOR_PAIR_ID))
         help_win.refresh()
 
     def debug(self, message):
