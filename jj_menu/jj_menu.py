@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 from __future__ import unicode_literals, print_function
-
 import argparse
 import os
 import sys
@@ -15,7 +14,6 @@ import six
 locale.setlocale(locale.LC_ALL, '')
 
 COLOR_ACTIVE = 1
-
 
 HELP = """jjfile.py not found. Create it into current or parent directory.
 sample:
@@ -87,19 +85,30 @@ def import_menu_settings():
     return imported
 
 
-def get_menu():
-    def _get_menus():
-        menus = getattr(import_menu_settings(), 'menu')
-        for m in menus:
-            if isinstance(m, six.string_types):
-                yield (m, m)
-            elif len(m) >= 2:
-                if isinstance(m[1], (list, tuple)):
-                    yield (m[0], ";".join(m[1]))
-                else:
-                    yield m
+class MenuItem(object):
+    def __init__(self, name, command=None, options=None):
+        self.name = name
+        self.command = self._make_command(command) or name
+        self.options = options or {}
 
-    return list(_get_menus())
+    def _make_command(self, command):
+        if not command:
+            return None
+        if isinstance(command, (list, tuple)):
+            return ';'.join(command)
+        else:
+            return command
+
+    @classmethod
+    def items(cls):
+        def _get_menu_items():
+            menu_source = getattr(import_menu_settings(), 'menu')
+            for m in menu_source:
+                if isinstance(m, six.string_types):
+                    m = [m]
+                yield cls(*m)
+
+        return list(_get_menu_items())
 
 
 def window_addstr(window, y, x, message, color=None):
@@ -127,14 +136,14 @@ class Launcher(object):
         self.result_file = result_file
         self.max_y, self.max_x = stdscr.getmaxyx()
         self.pos_y = 0
-        self.menu = get_menu()
+        self.menu_items = MenuItem.items()
         self.init_outfile()
 
     def render(self):
         win = curses.newwin(
-            len(self.menu), self.max_x, 0, 0)
-        for y, item in enumerate(self.menu):
-            item_name_str = item[0]
+            len(self.menu_items), self.max_x, 0, 0)
+        for y, item in enumerate(self.menu_items):
+            item_name_str = item.name
             if y == self.pos_y:
                 window_addstr(
                     win, y, 0, '*> {}'.format(item_name_str),
@@ -146,7 +155,7 @@ class Launcher(object):
         # win.refresh(0, 0, 0, 0, len(MENU), self.max_x)
 
         help_win = curses.newwin(1, self.max_x, self.max_y - 1, 0)
-        message = '$ {}'.format(self.menu[self.pos_y][1])
+        message = '$ {}'.format(self.menu_items[self.pos_y].command)
         window_addstr(
             help_win, 0, 0, message[:self.max_x - 1],
             curses.color_pair(COLOR_ACTIVE))
@@ -169,7 +178,7 @@ class Launcher(object):
             c = self.stdscr.getch()
 
             if c in (14, 106, 258):  # ↓
-                if self.pos_y < len(self.menu) - 1:
+                if self.pos_y < len(self.menu_items) - 1:
                     self.pos_y += 1
 
             elif c in (16, 107, 259):  # ↑
@@ -185,7 +194,7 @@ class Launcher(object):
                 raise KeyboardInterrupt()
             elif c == 10:
                 # choose
-                script = self.menu[self.pos_y][1]
+                script = self.menu_items[self.pos_y].command
                 if self.result_file:
                     with open(self.result_file, 'w') as fp:
                         fp.write(script)
@@ -230,6 +239,7 @@ def main():
 
 def print_help():
     print(HELP)
+
 
 if __name__ == '__main__':
     main()
