@@ -13,7 +13,8 @@ import six
 
 locale.setlocale(locale.LC_ALL, '')
 
-COLOR_ACTIVE = 1
+ACTIVE_COLOR_ID = 1
+ACTIVE_COLOR_OFFSET = 256
 
 HELP = """jjfile.py not found. Create it into current or parent directory.
 sample:
@@ -55,9 +56,29 @@ class MenuFileNotFound(Exception):
     pass
 
 
+class ColorIdTooLarge(Exception):
+    pass
+
+
 def initialize_colors():
+    # curses.start_color()
     curses.use_default_colors()
-    curses.init_pair(COLOR_ACTIVE, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(ACTIVE_COLOR_ID, curses.COLOR_BLACK, curses.COLOR_WHITE)
+
+
+def setup_palette(color_dict):
+    if not color_dict:
+        return
+    # for color_id, color_setting in color_dict.items():
+    #     if color_id >= 255:
+    #         raise ColorIdTooLarge(color_id)
+    #     if isinstance(color_setting, (list, tuple)):
+    #         fg_color, bg_color = color_setting
+    #     else:
+    #         fg_color = color_setting
+    #         bg_color = curses.COLOR_BLACK
+    #     curses.init_pair(color_id, fg_color, bg_color)
+    #     curses.init_pair(color_id + ACTIVE_COLOR_OFFSET, bg_color, fg_color)
 
 
 def find_menu_file_path(cwd):
@@ -100,15 +121,25 @@ class MenuItem(object):
             return command
 
     @classmethod
-    def items(cls):
+    def items(cls, menu_source):
         def _get_menu_items():
-            menu_source = getattr(import_menu_settings(), 'menu')
             for m in menu_source:
                 if isinstance(m, six.string_types):
                     m = [m]
                 yield cls(*m)
 
         return list(_get_menu_items())
+
+    @property
+    def default_color_id(self):
+        return self.options.get('color', None)
+
+    @property
+    def active_color_id(self):
+        dci = self.default_color_id
+        if not dci:
+            return None
+        return dci + ACTIVE_COLOR_OFFSET
 
 
 def window_addstr(window, y, x, message, color=None):
@@ -136,7 +167,9 @@ class Launcher(object):
         self.result_file = result_file
         self.max_y, self.max_x = stdscr.getmaxyx()
         self.pos_y = 0
-        self.menu_items = MenuItem.items()
+        self.jjfile_module = import_menu_settings()
+        self.menu_items = MenuItem.items(
+            getattr(self.jjfile_module, 'menu'))
         self.init_outfile()
 
     def render(self):
@@ -147,7 +180,7 @@ class Launcher(object):
             if y == self.pos_y:
                 window_addstr(
                     win, y, 0, '*> {}'.format(item_name_str),
-                    curses.color_pair(COLOR_ACTIVE))
+                    curses.color_pair(ACTIVE_COLOR_ID))
             else:
                 window_addstr(
                     win, y, 0, '   {}'.format(item_name_str))
@@ -158,7 +191,7 @@ class Launcher(object):
         message = '$ {}'.format(self.menu_items[self.pos_y].command)
         window_addstr(
             help_win, 0, 0, message[:self.max_x - 1],
-            curses.color_pair(COLOR_ACTIVE))
+            curses.color_pair(ACTIVE_COLOR_ID))
         help_win.refresh()
 
     def debug(self, message):
