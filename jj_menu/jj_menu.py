@@ -267,7 +267,8 @@ def main():
         script = curses.wrapper(launch, args)
         print('$ {}'.format(script))
         if not args.result_file:
-            print(subprocess.check_output(script, shell=True))
+            result = subprocess.check_output(script, shell=True)
+            print(result.decode('utf-8', errors='ignore'))
 
     except MenuFileNotFound:
         print_help()
