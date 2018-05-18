@@ -11,8 +11,10 @@ colors = {
 }
 
 menu = [
-    ('PyPI register', 'python setup.py register', {"color": 2}),
-    ('PyPI upload', 'python setup.py sdist upload', {"color": 3}),
+    ('Launch editor', 'open -a PyCharm .'),
+    ('Build package', 'python setup.py sdist', {"color": 2}),
+    ('Upload package', 'twine upload dist/*', {"color": 3}),
+    ('Test', 'python setup.py test'),
     ('Git logs (simple)',
      'git log --graph --date-order -C -M '
      '--pretty=format:"<%h> %ad [%an] %Cgreen%d%Creset %s" '

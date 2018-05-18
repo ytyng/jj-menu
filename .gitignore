@@ -1,8 +1,9 @@
 # General
 tmp
 temp
-#*
+\#*
 .#*
+~*
 
 # Editor
 *~
@@ -12,8 +13,9 @@ temp
 # Python
 *.pyc
 *.pyo
+*.eggs
+*.egg-info/
 dist/
-jj_menu.egg-info/
 
 # Windows
 Thumbs.db
@@ -53,6 +55,11 @@ Podfile.lock
 # JetBrains
 .idea
 
+# virtualenv
+venv
+.venv
+
 # if required
 # data/*
 # config/*
+#

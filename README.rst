@@ -4,6 +4,10 @@ jj-menu
 
 Simple CUI (TUI) Menu
 
+.. image:: https://img.shields.io/pypi/v/jj-menu.svg
+    :target: https://pypi.python.org/pypi/jj-menu/
+    :alt: Latest PyPI version
+
 .. image:: demo/jj-demo.gif
 
 Install
