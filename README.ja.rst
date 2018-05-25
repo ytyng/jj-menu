@@ -4,6 +4,10 @@ jj-menu
 
 シンプル CUI (TUI) メニュー
 
+.. image:: https://secure.travis-ci.org/ytyng/jj-menu.svg?branch=master
+    :alt: Build Status
+    :target: http://travis-ci.org/ytyng/jj-menu
+
 .. image:: https://img.shields.io/pypi/v/jj-menu.svg
     :target: https://pypi.python.org/pypi/jj-menu/
     :alt: Latest PyPI version
