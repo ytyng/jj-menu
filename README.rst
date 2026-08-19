@@ -2,6 +2,16 @@
 jj-menu
 ~~~~~~~
 
+**This project is no longer maintained. It has been rewritten in Rust:**
+`cyberneura/jj-menu <https://github.com/cyberneura/jj-menu>`_
+
+Install it with ``brew install cyberneura/tap/jj-menu`` or
+``cargo install jj-menu``. It is not configured with ``jjfile.py`` — it reads
+``.jj-menu.yaml`` / ``.jj-menu.toml`` / ``.jj-menu.json`` — so a menu written
+for this version has to be rewritten rather than copied across.
+
+----
+
 Simple CUI (TUI) Menu
 
 .. image:: https://secure.travis-ci.org/ytyng/jj-menu.svg?branch=master
